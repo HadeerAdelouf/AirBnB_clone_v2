@@ -116,6 +116,7 @@ Usage: <class_name>.all()
 ```
 
 ###### Example 1: Destroy a User
+
 Usage: <class_name>.destroy(<_id>)
 ```
 (hbnb) User.destroy("99f45908-1d17-46d1-9dd2-b7571128115b")
