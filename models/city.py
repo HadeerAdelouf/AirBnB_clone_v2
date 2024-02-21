@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """This is the city class"""
+from os import getenvb
 from sqlalchemy.ext.declarative import declarative_base
 import models
 from models.base_model import BaseModel, Base
@@ -11,7 +12,7 @@ from models.place import Place
 
 class City(BaseModel, Base):
     """Representation of city """
-    if models.storage_t == "db":
+    if getenvb('HBNB_TYPE_STORAGE') == "db":
         __tablename__ = 'cities'
         state_id = Column(String(60), ForeignKey('states.id'), nullable=False)
         name = Column(String(128), nullable=False)
