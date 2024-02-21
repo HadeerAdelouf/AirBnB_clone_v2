@@ -20,53 +20,57 @@ class DBStorage:
     __session = None
 
     def __init__(self):
-        """Initialize a new DBStorage instance."""
-        self.__engine = create_engine("mysql+mysqldb://{}:{}@{}/{}".
-                                      format(getenv("HBNB_MYSQL_USER"),
-                                             getenv("HBNB_MYSQL_PWD"),
-                                             getenv("HBNB_MYSQL_HOST"),
-                                             getenv("HBNB_MYSQL_DB")),
+        """Creates the engine"""
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
+                                      .format(getenv('HBNB_MYSQL_USER'),
+                                              getenv('HBNB_MYSQL_PWD'),
+                                              getenv('HBNB_MYSQL_HOST'),
+                                              getenv('HBNB_MYSQL_DB')),
                                       pool_pre_ping=True)
-        if getenv("HBNB_ENV") == "test":
-            Base.metadata.drop_all(self.__engine)
+        if getenv('HBNB_ENV') == 'test':
+            Base.metadata.drop_all(bind=self.__engine)
 
     def all(self, cls=None):
         """Method that queries on the currect database session"""
-        objects_dic = {}
+        objects_dictionary = {}
 
         if cls is None:
-            objs_list = self.__session.query(State).all()
-            objs_list.extend(self.__session.query(City).all())
-            objs_list.extend(self.__session.query(User).all())
-            objs_list.extend(self.__session.query(Place).all())
-            objs_list.extend(self.__session.query(Review).all())
-            objs_list.extend(self.__session.query(Amenity).all())
+            objects_list = self.__session.query(State).all()
+            objects_list.extend(self.__session.query(City).all())
+            objects_list.extend(self.__session.query(User).all())
+            objects_list.extend(self.__session.query(Place).all())
+            objects_list.extend(self.__session.query(Review).all())
+            objects_list.extend(self.__session.query(Amenity).all())
         else:
             if type(cls) == str:
                 cls = eval(cls)
-            objs_list = self.__session.query(cls).all()
+            objects_list = self.__session.query(cls).all()
 
-        for obj in objs_list:
+        for obj in objects_list:
             key = "{}.{}".format(type(obj).__name__, obj.id)
-            objects_dic[key] = obj
+            objects_dictionary[key] = obj
 
-        return objects_dic
+        return objects_dictionary
 
     def new(self, obj):
-        """adds the object to the current database session"""
+        """Method that adds the object to the current database session"""
         self.__session.add(obj)
 
     def save(self):
-        """commits all changes of the current database session"""
+        """Method that commits all changes of the current database session"""
+
         self.__session.commit()
 
     def delete(self, obj=None):
-        """Delete obj from the current database session."""
-        if obj is not None:
+        """Method that deletes from the current database
+        session obj if not None"""
+
+        if obj:
             self.__session.delete(obj)
 
     def reload(self):
         """Method that creates all tables in the database"""
+
         Base.metadata.create_all(self.__engine)
         my_session = sessionmaker(bind=self.__engine,
                                   expire_on_commit=False)
