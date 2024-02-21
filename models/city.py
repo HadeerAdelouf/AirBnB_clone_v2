@@ -1,9 +1,21 @@
 #!/usr/bin/python3
 """ City Module for HBNB project """
-from models.base_model import BaseModel
+
+import models
+from models.base_model import BaseModel, Base
+from os import getenv
+import sqlalchemy
+from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
 
 
-class City(BaseModel):
-    """ The city class, contains state ID and name """
-    state_id = ""
-    name = ""
+class City(BaseModel, Base):
+    """
+    Represents a city for a MySQL database.
+    Inherits from SQLAlchemy Base and links to the MySQL table cities.
+    """
+    __tablename__ = "cities"
+    name = Column(String(128), nullable=False)
+    state_id = Column(String(60), ForeignKey("state.id"), nullable=False)
+    places = relationship("Place", backref="cities", cascade="delete")
